@@ -1,6 +1,17 @@
 import { commonBtn } from "../../dataset/config";
+import { quitAuction } from "../../methods";
 
-const Card = ({ idx = 0, title }: { idx: number | null; title: string }) => {
+const Card = ({
+  idx = 0,
+  title,
+  highestBid,
+  highestBidder,
+}: {
+  idx: number | null;
+  title: string | undefined;
+  highestBid: string | undefined;
+  highestBidder: string | undefined;
+}) => {
   return (
     <div
       key={idx}
@@ -11,15 +22,17 @@ const Card = ({ idx = 0, title }: { idx: number | null; title: string }) => {
       {title === "Auction Details" ? (
         <>
           <p className="text-sm text-gray-300 leading-relaxed font-sans">
-            최고가: <span>25eth</span>
+            최고가: <span>{highestBid}</span>
           </p>
           <p className="text-sm text-gray-300 leading-relaxed font-sans">
-            입찰자: <span className="text-ellipsis">0x5148d45eaa27982DE951629D27...</span>
+            입찰자: <span className="text-ellipsis">{highestBidder}</span>
           </p>
         </>
       ) : (
         <>
-          <button className={commonBtn}>경매종료하기</button>
+          <button className={commonBtn} onClick={() => quitAuction()}>
+            경매종료하기
+          </button>
         </>
       )}
     </div>

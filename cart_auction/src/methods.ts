@@ -1,21 +1,13 @@
 import { createSysMsg, throwError, weiToEther } from "./utils";
 
-import { auctionContract, bidder, userWalletAddress, web3 } from "./auction";
-import { Contract, ContractEvent, EventData } from "web3-eth-contract";
+import { auctionContract, bidder, web3 } from "./auction";
+import { EventData } from "web3-eth-contract";
 
-export const auctionInit = () => {
-  bid(userWalletAddress);
-  getHighestBidder();
-  getHighestBid();
-  getAuctionState();
-  getActionItemData();
-  getBids();
-};
-
-// 경매 끝내는 함수
+// 경매 종료 함수
 export const quitAuction = async () => {
   try {
     const res = await auctionContract.methods.auction_end().call();
+    console.log(res);
     return res;
   } catch (e) {
     console.error(e);
@@ -46,19 +38,26 @@ export const getHighestBid = async () => {
 export const getAuctionState = async () => {
   try {
     const res = await auctionContract.methods.STATE().call();
-    return res;
+
+    switch (res) {
+      case "1":
+        return "진행중";
+      case "0":
+        return "종료";
+    }
   } catch (e) {
-    console.error(e);
+    throwError(e, "옥션 상태를 가져오는 도중 실패했습니다.");
   }
 };
 
 // 현재 옥션에 올라와있는 매물을 가져오는 함수 (지금은 자동차로 고정)
-export const getActionItemData = async () => {
+export const getAuctionItemData = async () => {
   try {
     const res = await auctionContract.methods.Mycar().call();
+    console.log(res);
     return res;
   } catch (e) {
-    console.error(e);
+    throwError(e, "옥션 아이템을 가져오는 도중 실패했습니다.");
   }
 };
 
@@ -72,17 +71,29 @@ export const getBids = async () => {
   }
 };
 
-// 출금하기
-export const withdraw = async () => {
+// 옥션 종료 시간 출력
+export const getAuctionEndTime = async () => {
   try {
-    const res = await auctionContract.methods.withdraw().send({
-      from: userWalletAddress,
-      gas: 200000,
-    });
+    const res = await auctionContract.methods.auction_end().call();
+    return res;
+  } catch (e) {
+    throwError(e, "시간 정보를 가져오는데 실패했습니다.");
+  }
+};
 
-    const successMsg = createSysMsg("성공적으로 출금 되었습니다.", res.transactionHash);
+// 출금하기
+export const withdraw = async (userWalletAddress: string | undefined) => {
+  try {
+    if (userWalletAddress) {
+      const res = await auctionContract.methods.withdraw().send({
+        from: userWalletAddress,
+        gas: 200000,
+      });
 
-    return successMsg;
+      const successMsg = createSysMsg("성공적으로 출금 되었습니다.", res.transactionHash);
+      console.log(res, successMsg);
+      return successMsg;
+    }
   } catch (e) {
     throwError(e, "출금 실패");
   }
@@ -101,23 +112,22 @@ export const getAuctionOwner = async () => {
 /* 이벤트 리스너 함수들 */
 
 // 입찰하기
-export const bid = async (userWalletAddress: string) => {
-  const mybid = "10";
-
+export const bid = (userWalletAddress: string | undefined, mybid: string) => {
   try {
-    const res = await auctionContract.methods.bid().send({
-      from: userWalletAddress,
-      value: web3.utils.toWei(mybid, "ether"),
-      gas: 2000000,
-    });
+    if (userWalletAddress) {
+      const res = auctionContract.methods.bid().send({
+        from: userWalletAddress,
+        value: web3.utils.toWei(mybid, "ether"),
+        gas: 2000000,
+      });
+      const successMsg = createSysMsg("성공적으로 입찰되었습니다!", res.transactionHash);
 
-    const successMsg = createSysMsg("성공적으로 입찰되었습니다!", res.transactionHash);
+      return successMsg;
+    }
 
-    auctionInit();
-
-    return successMsg;
+    throw new Error("입찰 실패");
   } catch (e) {
-    throwError(e, "입찰 실패");
+    throwError(e, "");
   }
 };
 
@@ -131,6 +141,7 @@ export const subscribeWithDrawEvent = async () => {
   });
 };
 
+//
 export const subscribeBidEvent = async () => {
   auctionContract.events
     .BidEvent(
@@ -143,12 +154,10 @@ export const subscribeBidEvent = async () => {
     })
     .on("data", function (event: EventData) {
       console.log(event); // same results as the optional callback above
-      $("#eventslog").html(
-        event.returnValues.highestBidder + " has bidden(" + event.returnValues.highestBid + " wei)"
-      );
+      return event.returnValues.highestBidder;
     })
     .on("changed", function (event: EventData) {
-      // remove event from local database
+      // 필요한 경우 로컬 데이터베이스 업데이트 구현
       console.log(event);
     });
 };
