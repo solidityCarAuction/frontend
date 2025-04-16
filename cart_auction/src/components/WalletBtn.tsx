@@ -1,14 +1,17 @@
 import { FaWallet } from "react-icons/fa6";
 import Wallets from "./Wallets";
 import { useState } from "react";
+import MyWallet from "./MyWallet";
 
 const WalletBtn = ({
   userWallet,
   userWallets,
+  balance,
   setUserWallet,
 }: {
   userWallet: string | undefined;
   userWallets: string[] | undefined;
+  balance: string | undefined;
   setUserWallet: React.Dispatch<React.SetStateAction<string | undefined>>;
 }) => {
   const [showWallet, setShowWallet] = useState(true);
@@ -20,7 +23,14 @@ const WalletBtn = ({
         <FaWallet size={30} />
       </button>
       {showWallet ? (
-        <Wallets userWallet={userWallet} userWallets={userWallets} setUserWallet={setUserWallet} />
+        <div className="flex flex-col gap-4 fixed z-50 bottom-35 right-10">
+          <Wallets
+            userWallet={userWallet}
+            userWallets={userWallets}
+            setUserWallet={setUserWallet}
+          />
+          <MyWallet userWallet={userWallet} balance={balance} />
+        </div>
       ) : (
         false
       )}

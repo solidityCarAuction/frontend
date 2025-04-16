@@ -4,12 +4,20 @@ import Cards from "../components/Cards/Cards";
 import HeroCard from "../components/Cards/HeroCard";
 import LogBox from "../components/Cards/LogBox";
 import Header from "../components/Header";
-import { web3Init } from "../auction";
+import { auctionContract, web3Init } from "../auction";
 import { throwError } from "../utils";
-import { getAuctionItemData, getAuctionState, getHighestBid, getHighestBidder } from "../methods";
+import {
+  getAuctionItemData,
+  getAuctionOwner,
+  getAuctionState,
+  getBalance,
+  getHighestBid,
+  getHighestBidder,
+} from "../methods";
 import WalletBtn from "../components/WalletBtn";
 
 const Homepage = () => {
+  const [ownerWallet, setOwnerWallet] = useState<string>();
   const [userWallets, setUserWallets] = useState<string[]>();
   const [userWallet, setUserWallet] = useState<string>();
   const [mybid, setMybid] = useState("");
@@ -17,6 +25,23 @@ const Homepage = () => {
   const [auctionState, setAuctionState] = useState<"진행중" | "종료">("종료");
   const [highestBid, setHighestBid] = useState<string>();
   const [highestBidder, setHighestBidder] = useState();
+  const [balance, setBalance] = useState<string | undefined>("0");
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const owner = await getAuctionOwner();
+        if (owner) {
+          setOwnerWallet(owner);
+          console.log(ownerWallet);
+        }
+      } catch (e) {
+        throwError(e, "옥션 주최자의 지갑주소를 가져오는데 실패했습니다.");
+      }
+    };
+
+    fetchData();
+  }, [ownerWallet]);
 
   useEffect(() => {
     const fetchItem = async () => {
@@ -51,10 +76,10 @@ const Homepage = () => {
 
     const timeId = setInterval(() => {
       fetchData();
-    }, 3000);
+    }, 1000);
 
     return () => clearInterval(timeId);
-  }, [mybid]);
+  }, []);
 
   // default wallet 세팅
   useEffect(() => {
@@ -91,9 +116,47 @@ const Homepage = () => {
     console.log("유저 지갑이 변경되었습니다: ", userWallet);
   }, [userWallet]);
 
+  useEffect(() => {
+    const event = auctionContract.events.BidEvent(); // websocket
+
+    const litener = async () => {
+      const targetWallet = event.returnValues.bidder;
+      if (targetWallet === userWallet) {
+        const accounts = await web3Init();
+        setUserWallets(accounts);
+      }
+    };
+
+    litener();
+
+    return () => {
+      event.unsubscribe();
+    };
+  }, [userWallet, userWallets]);
+
+  useEffect(() => {
+    const fetchBalance = async () => {
+      if (userWallet) {
+        try {
+          const newBalance = await getBalance(userWallet); // 지갑 주소로 잔고 가져오기
+          setBalance(newBalance);
+        } catch (e) {
+          console.error("잔고를 가져오는 도중 오류 발생:", e);
+        }
+      }
+    };
+
+    fetchBalance();
+  }, [userWallet, balance]);
+
   return (
     <>
-      <WalletBtn userWallet={userWallet} userWallets={userWallets} setUserWallet={setUserWallet} />
+      <WalletBtn
+        userWallet={userWallet}
+        userWallets={userWallets}
+        setUserWallet={setUserWallet}
+        balance={balance}
+      />
       <Header />
       <main className="h-full p-16">
         <div className="mb-8 flex gap-6 h-full">
@@ -104,7 +167,7 @@ const Homepage = () => {
           )}
           <LogBox />
         </div>
-        <Cards highestBid={highestBid} highestBidder={highestBidder} />
+        <Cards highestBid={highestBid} highestBidder={highestBidder} ownerWallet={ownerWallet} />
         <div className="w-full mt-8">
           <BidInput userWallet={userWallet} mybid={mybid} setMybid={setMybid} />
         </div>

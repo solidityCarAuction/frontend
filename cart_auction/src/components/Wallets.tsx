@@ -8,7 +8,7 @@ const Wallets = ({
   setUserWallet: React.Dispatch<React.SetStateAction<string | undefined>>;
 }) => {
   return (
-    <div className="fixed z-50 bottom-35 right-10 w-[350px] h-[600px] bg-black/50 border border-white/10 backdrop-blur-md rounded-2xl shadow-2xl p-6 overflow-y-scroll">
+    <div className="w-[350px] h-[600px] bg-black/50 border border-white/10 backdrop-blur-md rounded-2xl shadow-2xl p-6 overflow-y-scroll">
       <ul className="flex flex-col gap-2">
         {userWallets?.map((wallet, index) => (
           <li

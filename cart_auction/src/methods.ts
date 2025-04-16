@@ -3,14 +3,19 @@ import { createSysMsg, throwError, weiToEther } from "./utils";
 import { auctionContract, bidder, web3 } from "./auction";
 import { EventData } from "web3-eth-contract";
 
-// 경매 종료 함수
-export const quitAuction = async () => {
-  try {
-    const res = await auctionContract.methods.auction_end().call();
-    console.log(res);
-    return res;
-  } catch (e) {
-    console.error(e);
+// 옥션 종료 함수
+export const quitAuction = async (userWalletAddress: string) => {
+  if (userWalletAddress) {
+    try {
+      const res = await auctionContract.methods.deactivateAuction().send({
+        from: userWalletAddress,
+        gas: 200000,
+      });
+      console.log(res);
+      return res;
+    } catch (e) {
+      console.error(e);
+    }
   }
 };
 
@@ -102,10 +107,23 @@ export const withdraw = async (userWalletAddress: string | undefined) => {
 export const getAuctionOwner = async () => {
   try {
     const res = auctionContract.methods.get_owner().call();
-
+    console.log("옥션 주최자: ", res);
     return res;
   } catch (e) {
     throwError(e, "옥션 주최자의 데이터를 가져오는데 실패했습니다.");
+  }
+};
+
+// 내 지갑 잔액 확인
+export const getBalance = async (walletAddress: string | undefined) => {
+  if (!walletAddress) return;
+
+  try {
+    const balance = await web3.eth.getBalance(walletAddress); // web3를 사용하여 잔고 가져오기
+    return web3.utils.fromWei(balance, "ether"); // wei 단위를 ether로 변환
+  } catch (e) {
+    console.error("잔고를 가져오는 도중 오류 발생:", e);
+    throw e; // 오류를 다시 던져서 호출한 곳에서 처리할 수 있도록 함
   }
 };
 
@@ -145,20 +163,13 @@ export const subscribeWithDrawEvent = async () => {
 export const subscribeBidEvent = async () => {
   auctionContract.events
     .BidEvent(
-      /*{highestBidder:"A",highestBid:"888"},*/ function (error: Error, event: EventData) {
+      /*{highestBidder:"A",highestBid:"888"},*/ function (event: EventData) {
         console.log(event);
       }
     )
-    .on("connected", function (subscriptionId: string) {
-      console.log(subscriptionId);
-    })
     .on("data", function (event: EventData) {
       console.log(event); // same results as the optional callback above
       return event.returnValues.highestBidder;
-    })
-    .on("changed", function (event: EventData) {
-      // 필요한 경우 로컬 데이터베이스 업데이트 구현
-      console.log(event);
     });
 };
 

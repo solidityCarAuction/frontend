@@ -1,3 +1,4 @@
+import { FaEthereum } from "react-icons/fa6";
 import { commonBtn } from "../../dataset/config";
 import { quitAuction } from "../../methods";
 
@@ -6,31 +7,60 @@ const Card = ({
   title,
   highestBid,
   highestBidder,
+  ownerWallet,
 }: {
   idx: number | null;
   title: string | undefined;
   highestBid: string | undefined;
   highestBidder: string | undefined;
+  ownerWallet: string | undefined;
 }) => {
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard
+      .writeText(text)
+      .then(() => {
+        alert("입찰자 주소가 복사되었습니다!"); // 복사 성공 시 알림
+      })
+      .catch((err) => {
+        console.error("입찰자 주소 복사 실패:", err);
+      });
+  };
+
   return (
     <div
       key={idx}
       className="bg-white/5 border border-white/10 rounded-2xl p-6 shadow-lg backdrop-blur-md transition-transform duration-300 hover:scale-102 hover:shadow-xl overflow-hidden"
     >
-      <h2 className="text-xl font-semibold mb-2 font-sans">{title}</h2>
-      <div className="bg-white/5 border border-white/10 mb-8"></div>
+      <h2 className="text-xl font-semibold mb-2 font-sans text-center">{title}</h2>
       {title === "Auction Details" ? (
-        <>
-          <p className="text-sm text-gray-300 leading-relaxed font-sans">
-            최고가: <span>{highestBid}</span>
-          </p>
-          <p className="text-sm text-gray-300 leading-relaxed font-sans">
-            입찰자: <span className="text-ellipsis">{highestBidder}</span>
-          </p>
-        </>
+        <div className="w-full flex items-center justify-center gap-4">
+          <div className="flex flex-col items-center justify-center gap-2 flex-1">
+            <p className="text-md text-white text-start">Highest</p>
+            <div className="flex items-center gap-1">
+              <FaEthereum />
+              <p className="text-3xl font-bold text-white">{highestBid}</p>
+            </div>
+          </div>
+          <div className="bg-white/5 border border-white/10 h-16 mx-4"></div>
+          <div className="flex flex-col items-center justify-center gap-2 flex-1">
+            <p className="text-md text-white">Wallet Address</p>
+            <p
+              className="w-45 overflow-hidden whitespace-nowrap truncate text-3xl font-bold text-white cursor-pointer hover:underline"
+              onClick={() => copyToClipboard(highestBidder || "")} // 클릭 시 복사 함수 호출
+            >
+              {highestBidder}
+            </p>
+          </div>
+        </div>
       ) : (
         <>
-          <button className={commonBtn} onClick={() => quitAuction()}>
+          <button
+            className={commonBtn}
+            onClick={() => {
+              console.log("클릭됨");
+              quitAuction(ownerWallet || "");
+            }}
+          >
             경매종료하기
           </button>
         </>

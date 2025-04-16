@@ -45,7 +45,7 @@ const HeroCard = ({
         <ul className="text-lg text-gray-300 leading-relaxed font-sans text-center">
           <li>
             <p className="font-extrabold">
-              브랜드: <span className="font-normal">{auctionData.Brand}</span>
+              브랜드 : <span className="font-normal">{auctionData.Brand}</span>
             </p>
           </li>
           <li>
