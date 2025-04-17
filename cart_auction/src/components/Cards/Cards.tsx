@@ -1,26 +1,11 @@
 import { cardTitles } from "../../dataset/config";
 import Card from "./Card";
 
-const Cards = ({
-  highestBid,
-  highestBidder,
-  ownerWallet,
-}: {
-  highestBid: string | undefined;
-  highestBidder: string | undefined;
-  ownerWallet: string | undefined;
-}) => {
+const Cards = () => {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
       {cardTitles.map((title, idx) => (
-        <Card
-          idx={idx}
-          key={idx}
-          title={title.name}
-          highestBid={highestBid}
-          highestBidder={highestBidder}
-          ownerWallet={ownerWallet}
-        />
+        <Card title={title.name} key={idx} />
       ))}
     </div>
   );
