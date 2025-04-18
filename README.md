@@ -15,8 +15,6 @@
 | 김진모 | FE/BE | [GitHub](https://github.com/moriroKim)       |
 | 방현민 | BE    | [GitHub](https://github.com/banghyunmin1999) |
 
-각 팀원은 프로젝트의 백엔드 개발에 기여하였으며, GitHub 링크를 통해 각자의 작업을 확인할 수 있습니다.
-
 ## 주요 기능
 
 - **경매 이벤트 처리**: 경매와 관련된 다양한 이벤트를 실시간으로 처리합니다.
