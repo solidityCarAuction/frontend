@@ -12,9 +12,6 @@ const useAuctionEvents = () => {
   const getBalance = useUserStore((state) => state.getBalance);
   const addLog = useLogStore((state) => state.addLog);
   const getStatus = useAuctionStore((state) => state.getStatus);
-  // const getTimeLeft = useAuctionStore((state) => state.updateTimeLeft);
-  // const higestBid = useAuctionStore((state) => state.highestBid);
-  // const higestBidder = useAuctionStore((state) => state.highestBidder);
 
   useEffect(() => {
     // 1. 입찰 이벤트
