@@ -1,7 +1,12 @@
+# DAPP_PROJECT
 # 블록체인 경매사이트 프로젝트
 
 이 프로젝트는 블록체인 경매 시스템을 구현한 웹 애플리케이션입니다.
 사용자는 경매에 참여(입찰)하고, 출금할 수 있으며, 경매 주최자는 경매 상태를 확인할 수 있습니다.
+
+## 시연영상 링크
+- [전체 시연영상](https://youtu.be/6VNmBCxeCRA)
+- [반응형](https://www.youtube.com/watch?v=GR2t5FWPvBY)
 
 ## 프로젝트 참여자
 
@@ -20,8 +25,8 @@
 
 ## 사용 스택
 
-- **프론트엔드**: React, TypeScript, Web3.js
-- **백엔드**: Solidity(Remix), Ganache
+- **프론트엔드**: React, TypeScript, Web3.js, Ganache
+- **백엔드**: Solidity(Remix)
 - **상태 관리**: Zustand
 - **스타일링**: CSS, Tailwind CSS
 - **기타**: lodash
