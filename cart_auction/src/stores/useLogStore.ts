@@ -1,13 +1,21 @@
 import { create } from "zustand";
 
+interface LogItem {
+  id: number; // 밀리초 단위의 timestamp
+  message: string;
+}
+
 interface LogState {
-  logs: string[]; // 로그 메시지를 저장할 배열
-  addLog: (message: string) => void; // 로그 추가 메서드
-  clearLogs: () => void; // 로그 초기화 메서드
+  logs: LogItem[];
+  addLog: (message: string) => void;
+  clearLogs: () => void;
 }
 
 export const useLogStore = create<LogState>((set) => ({
-  logs: [], // 초기값으로 빈 배열 설정
-  addLog: (message) => set((state) => ({ logs: [...state.logs, message] })), // 로그 추가
-  clearLogs: () => set({ logs: [] }), // 로그 초기화
+  logs: [],
+  addLog: (message) =>
+    set((state) => ({
+      logs: [...state.logs, { id: Date.now() + Math.random(), message }],
+    })),
+  clearLogs: () => set({ logs: [] }),
 }));

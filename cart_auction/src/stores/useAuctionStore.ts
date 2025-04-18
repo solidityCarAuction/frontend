@@ -18,6 +18,8 @@ interface AuctionState {
   getStatus: () => Promise<void>;
   getHighestBid: () => Promise<void>;
   getHighestBidder: () => Promise<void>;
+  deactivate: (ownerWallet: string) => Promise<void>;
+  withdrawFunds: (ownerWallet: string) => Promise<void>;
 }
 
 export const useAuctionStore = create<AuctionState>((set) => ({
@@ -106,6 +108,30 @@ export const useAuctionStore = create<AuctionState>((set) => ({
     } catch (e) {
       console.error("경매 종료시간 정보를 가져오는데 실패했습니다: ", e);
       set((state) => ({ ...state, timeLeft: 0 }));
+    }
+  },
+
+  deactivate: async (currentWallet) => {
+    try {
+      const transaction = await auctionContract.methods.cancel_auction().send({
+        from: currentWallet,
+      });
+      console.log(transaction);
+    } catch (e: unknown) {
+      const errorMsg = e instanceof Error ? e.message : String(e);
+      throw new Error(errorMsg);
+    }
+  },
+
+  withdrawFunds: async (currentWallet) => {
+    try {
+      const transaction = await auctionContract.methods.withdrawRemainingFunds().send({
+        from: currentWallet,
+      });
+      console.log(transaction);
+    } catch (e: unknown) {
+      const errorMsg = e instanceof Error ? e.message : String(e);
+      throw new Error(errorMsg);
     }
   },
 

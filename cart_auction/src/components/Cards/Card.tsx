@@ -4,18 +4,45 @@ import { commonBtn } from "../../dataset/config";
 import { useAuctionStore } from "../../stores/useAuctionStore";
 import { weiToEther } from "../../utils";
 import { useEffect } from "react";
+import { useUserStore } from "../../stores/useUserStore";
+import { useLogStore } from "../../stores/useLogStore";
 
 const Card = ({ title }: { title: string }) => {
   // const { ownerWallet } = useUserStore((state) => state);
-  const { getHighestBid, getHighestBidder } = useAuctionStore((state) => state);
+  const { getHighestBid, getHighestBidder, deactivate, withdrawFunds } = useAuctionStore(
+    (state) => state
+  );
   const highestBid = useAuctionStore((state) => state.highestBid);
   const highestBidder = useAuctionStore((state) => state.highestBidder);
+  const currentWallet = useUserStore((state) => state.currentWallet);
+  const addLog = useLogStore((state) => state.addLog);
 
   useEffect(() => {
     getHighestBid();
     getHighestBidder();
     console.log(highestBid, highestBidder);
   }, [highestBid]);
+
+  const handleDeactivate = async () => {
+    try {
+      await deactivate(currentWallet);
+    } catch (e: unknown) {
+      const errorMsg = e instanceof Error ? e.message : String(e);
+      const delimeter = errorMsg.split("revert")[1];
+      console.log(delimeter);
+      addLog(`[에러]: ${delimeter}`);
+    }
+  };
+
+  const handleWithdrawFunds = async () => {
+    try {
+      await withdrawFunds(currentWallet);
+    } catch (e: unknown) {
+      const errorMsg = e instanceof Error ? e.message : String(e);
+      const delimeter = errorMsg.split("revert")[1];
+      addLog(`[에러]: ${delimeter}`);
+    }
+  };
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard
@@ -57,16 +84,14 @@ const Card = ({ title }: { title: string }) => {
               </div>
             </div>
           ) : (
-            <>
-              <button
-                className={commonBtn}
-                onClick={() => {
-                  console.log("클릭됨");
-                }}
-              >
-                경매종료하기
+            <div>
+              <button className={commonBtn} onClick={handleDeactivate}>
+                경매 종료
               </button>
-            </>
+              <button className={commonBtn} onClick={handleWithdrawFunds}>
+                낙찰금 회수
+              </button>
+            </div>
           )}
         </div>
       )}

@@ -9,10 +9,10 @@ interface UserState {
   bid: number;
   balance: number;
   getWallets: () => Promise<void>;
-  placeBid: (bid: number, currentWallet: string) => void;
-  withdraw: (currentWallet: string) => void;
+  placeBid: (bid: number, currentWallet: string) => Promise<void>;
+  withdraw: (currentWallet: string) => Promise<void>;
   switchWallet: (currentWallet: string) => void;
-  getBalance: (currentWallet: string) => void;
+  getBalance: (currentWallet: string) => Promise<void>;
 }
 
 export const useUserStore = create<UserState>((set) => ({
@@ -54,9 +54,10 @@ export const useUserStore = create<UserState>((set) => ({
         gas: 2000000,
       });
 
-      console.log(transaction);
-    } catch (e) {
-      console.error("입찰실패: ", e);
+      return transaction;
+    } catch (e: unknown) {
+      const errorMsg = e instanceof Error ? e.message : String(e);
+      throw new Error(errorMsg);
     }
   },
 
@@ -75,6 +76,7 @@ export const useUserStore = create<UserState>((set) => ({
     } catch (e) {
       console.error("잔액 조회 실패: ", e);
       set((state) => ({ ...state, balance: 0 }));
+      throw e;
     }
   },
 
@@ -91,8 +93,9 @@ export const useUserStore = create<UserState>((set) => ({
       }
 
       console.log(transaction);
-    } catch (e) {
-      console.error("출금실패: ", e);
+    } catch (e: unknown) {
+      const errorMsg = e instanceof Error ? e.message : String(e);
+      throw new Error(errorMsg);
     }
   },
 }));

@@ -17,12 +17,12 @@ const LogBox = () => {
           {logs.length > 0 ? (
             logs.map((item, idx) => (
               <p
-                key={idx}
+                key={item.id}
                 className={`text-xs text-green-400 leading-relaxed font-sans text-left ${
                   idx === logs.length - 1 ? "fade-in-up" : ""
                 }`}
               >
-                {item}
+                {item.message}
               </p>
             ))
           ) : (
