@@ -10,7 +10,7 @@ const MyWallet = () => {
 
   useEffect(() => {
     getBalance(currentWallet);
-  }, [currentWallet, getBalance]);
+  }, [currentWallet, balance]);
 
   const copyToClipboard = () => {
     if (currentWallet) {

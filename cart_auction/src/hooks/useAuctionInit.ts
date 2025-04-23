@@ -14,7 +14,7 @@ const useAuctionInit = () => {
       await getTimeLeft();
       await getStatus();
       await getWallets();
-      getBalance(currentWallet);
+      await getBalance(currentWallet);
 
       setIsFetched(true);
     };
