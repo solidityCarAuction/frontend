@@ -10,13 +10,18 @@ const useAuctionInit = () => {
 
   useEffect(() => {
     const initializeAuction = async () => {
-      await getAuctionItem();
-      await getTimeLeft();
-      await getStatus();
-      await getWallets();
-      await getBalance(currentWallet);
-
-      setIsFetched(true);
+      try {
+        await Promise.all([
+          getAuctionItem(),
+          getTimeLeft(),
+          getStatus(),
+          getWallets(),
+          getBalance(currentWallet)
+        ]);
+        setIsFetched(true);
+      } catch (error) {
+        console.error("초기화 중 오류 발생:", error);
+      }
     };
 
     initializeAuction();
