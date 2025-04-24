@@ -11,8 +11,12 @@ const HeroCard = ({ title }: { title: string }) => {
   const [auctionEndTime, setAuctionEndTime] = useState(0);
 
   useEffect(() => {
-    setAuctionEndTime(time);
-  }, [time]);
+    if (auctionStatus === "종료됨" || auctionStatus === "에러") {
+      setAuctionEndTime(0);
+    } else {
+      setAuctionEndTime(time);
+    }
+  }, [time, auctionStatus]);
 
   return (
     <div className="w-full h-[400px] bg-white/5 border border-white/10 rounded-2xl p-6 pb-20 shadow-lg backdrop-blur-md transition-transform duration-300 hover:scale-102 hover:shadow-xl">

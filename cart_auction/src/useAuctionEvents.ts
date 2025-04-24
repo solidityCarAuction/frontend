@@ -18,7 +18,8 @@ const useAuctionEvents = () => {
     bid: false,
     cancel: false,
     state: false,
-    withdraw: false
+    withdraw: false,
+    ownerWithdraw: false
   });
 
   // 1. 입찰 이벤트
@@ -129,6 +130,30 @@ const useAuctionEvents = () => {
     return () => {
       withdrawEvent.off();
       eventListenersRef.current.withdraw = false;
+    };
+  }, [currentWallet, getBalance, getStatus, addLog]);
+  
+  useEffect(() => {
+    if (eventListenersRef.current.ownerWithdraw) return;
+
+    const ownerWithdrawEvent = auctionContract.events
+      .OwnerWithdrawalEvent()
+      .on("data", async (event: EventData) => {
+        const { amount } = event.returnValues;
+
+        console.log("소유자 출금 이벤트 데이터:", event.returnValues);
+        addLog(`[최종 입찰가 회수] ${weiToEther(amount)} eth`);
+
+        if (currentWallet) {
+          await getBalance(currentWallet);
+        }
+      });
+
+    eventListenersRef.current.ownerWithdraw = true;
+
+    return () => {
+      ownerWithdrawEvent.off();
+      eventListenersRef.current.ownerWithdraw = false;
     };
   }, [currentWallet, getBalance, getStatus, addLog]);
 };
