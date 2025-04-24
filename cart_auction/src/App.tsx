@@ -1,5 +1,5 @@
 import Homepage from "./pages/Homepage";
-import useAuctionEvents from "./useAuctionEvents";
+import useAuctionEvents from "./hooks/useAuctionEvents";
 
 function App() {
   useAuctionEvents();

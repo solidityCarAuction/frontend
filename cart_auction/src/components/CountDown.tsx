@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { formatTime } from "../utils";
+import { formatTime } from "../utils/utils";
 
 const CountDown = ({ auctionEndTime }: { auctionEndTime: number }) => {
   const [remainingTime, setRemainingTime] = useState<number>(0);

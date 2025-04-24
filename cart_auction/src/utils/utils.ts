@@ -36,3 +36,14 @@ export const formatUnixTimestamp = (timestamp: number) => {
   
   return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 };
+
+export const copyToClipboard = (text: string) => {
+  navigator.clipboard
+    .writeText(text)
+    .then(() => {
+      alert("입찰자 주소가 복사되었습니다!"); // 복사 성공 시 알림
+    })
+    .catch((err) => {
+      console.error("입찰자 주소 복사 실패:", err);
+    });
+};

@@ -1,10 +1,10 @@
 import { useEffect, useRef } from "react";
-import { useAuctionStore } from "./stores/useAuctionStore";
-import { useUserStore } from "./stores/useUserStore";
-import { auctionContract } from "./auctionInstance";
+import { useAuctionStore } from "../stores/useAuctionStore";
+import { useUserStore } from "../stores/useUserStore";
+import { auctionContract } from "../utils/auctionInstance";
 import { EventData } from "web3-eth-contract";
-import { useLogStore } from "./stores/useLogStore";
-import { formatTime, weiToEther, formatUnixTimestamp } from "./utils";
+import { useLogStore } from "../stores/useLogStore";
+import { formatTime, weiToEther, formatUnixTimestamp } from "../utils/utils";
 
 const useAuctionEvents = () => {
   const updateHighestBid = useAuctionStore((state) => state.updateHighestBid);

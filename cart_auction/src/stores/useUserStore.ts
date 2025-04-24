@@ -1,6 +1,6 @@
 import { create } from "zustand";
-import { auctionContract, web3 } from "../auctionInstance";
-import { weiToEther } from "../utils";
+import { auctionContract, web3 } from "../utils/auctionInstance";
+import { weiToEther } from "../utils/utils";
 
 interface UserState {
   walletAddresses: string[];

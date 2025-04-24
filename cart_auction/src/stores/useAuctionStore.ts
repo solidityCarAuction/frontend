@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { auctionContract } from "../auctionInstance";
+import { auctionContract } from "../utils/auctionInstance";
 
 interface AuctionItem {
   Brand: string;
