@@ -23,8 +23,8 @@
 
 ## 사용 스택
 
-- **프론트엔드**: React, TypeScript, Web3.js, Ganache
-- **백엔드**: Solidity(Remix)
+- **프론트엔드**: React, TypeScript, Web3.js
+- **백엔드**: Solidity, Ganache
 - **상태 관리**: Zustand
 - **스타일링**: CSS, Tailwind CSS
 - **기타**: lodash
