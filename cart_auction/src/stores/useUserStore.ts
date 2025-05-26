@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { auctionContract, web3 } from "../utils/auctionInstance";
+import { auctionContract, web3 } from "../config/auctionInstance";
 import { weiToEther } from "../utils/utils";
 
 interface UserState {

@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { useAuctionStore } from "../stores/useAuctionStore";
 import { useUserStore } from "../stores/useUserStore";
-import { auctionContract } from "../utils/auctionInstance";
+import { auctionContract } from "../config/auctionInstance";
 import { EventData } from "web3-eth-contract";
 import { useLogStore } from "../stores/useLogStore";
 import { formatTime, weiToEther, formatUnixTimestamp } from "../utils/utils";
@@ -19,28 +19,30 @@ const useAuctionEvents = () => {
     cancel: false,
     state: false,
     withdraw: false,
-    ownerWithdraw: false
+    ownerWithdraw: false,
   });
 
   // 1. 입찰 이벤트
   useEffect(() => {
     if (eventListenersRef.current.bid) return;
 
-    const bidEvent = auctionContract.events.BidEvent().on("data", async (event: EventData) => {
-      const { highestBidder, highestBid } = event.returnValues;
-      const truncatedBidder = highestBidder.substring(0, 7);
-      
-      console.log("입찰 이벤트 데이터:", event.returnValues);
-      addLog(`[입찰] ${truncatedBidder}: ${weiToEther(highestBid)} eth`);
-      
-      // 상태 업데이트를 동기적으로 처리
-      await updateHighestBid(Number(highestBid), highestBidder);
-      
-      if (currentWallet) {
-        await getBalance(currentWallet);
-        await getStatus();
-      }
-    });
+    const bidEvent = auctionContract.events
+      .BidEvent()
+      .on("data", async (event: EventData) => {
+        const { highestBidder, highestBid } = event.returnValues;
+        const truncatedBidder = highestBidder.substring(0, 7);
+
+        console.log("입찰 이벤트 데이터:", event.returnValues);
+        addLog(`[입찰] ${truncatedBidder}: ${weiToEther(highestBid)} eth`);
+
+        // 상태 업데이트를 동기적으로 처리
+        await updateHighestBid(Number(highestBid), highestBidder);
+
+        if (currentWallet) {
+          await getBalance(currentWallet);
+          await getStatus();
+        }
+      });
 
     eventListenersRef.current.bid = true;
 
@@ -58,15 +60,12 @@ const useAuctionEvents = () => {
       .CanceledEvent()
       .on("data", async (event: EventData) => {
         const { time } = event.returnValues;
-        
+
         console.log("경매 취소 이벤트 데이터:", event.returnValues);
         addLog(`[경매 취소] ${formatUnixTimestamp(Number(time))}`);
 
         if (currentWallet) {
-          await Promise.all([
-            getBalance(currentWallet),
-            getStatus()
-          ]);
+          await Promise.all([getBalance(currentWallet), getStatus()]);
         }
       });
 
@@ -118,10 +117,7 @@ const useAuctionEvents = () => {
         addLog(`[출금] ${truncatedWithdrawer} : ${weiToEther(amount)} eth`);
 
         if (currentWallet) {
-          await Promise.all([
-            getBalance(currentWallet),
-            getStatus()
-          ]);
+          await Promise.all([getBalance(currentWallet), getStatus()]);
         }
       });
 
@@ -132,7 +128,7 @@ const useAuctionEvents = () => {
       eventListenersRef.current.withdraw = false;
     };
   }, [currentWallet, getBalance, getStatus, addLog]);
-  
+
   useEffect(() => {
     if (eventListenersRef.current.ownerWithdraw) return;
 

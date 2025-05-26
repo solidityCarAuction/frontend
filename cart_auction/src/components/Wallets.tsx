@@ -1,9 +1,10 @@
 import { useUserStore } from "../stores/useUserStore";
+import { FaCrown } from "react-icons/fa";
 
 const Wallets = () => {
   const { switchWallet } = useUserStore((state) => state);
-  const walletAddresses = useUserStore((state) => state.walletAddresses)
-  const currentWallet = useUserStore((state) => state.currentWallet)
+  const walletAddresses = useUserStore((state) => state.walletAddresses);
+  const currentWallet = useUserStore((state) => state.currentWallet);
 
   return (
     <div className="w-[350px] h-[600px] bg-black/50 border border-white/10 backdrop-blur-md rounded-2xl shadow-2xl p-6 overflow-y-scroll">
@@ -16,9 +17,12 @@ const Wallets = () => {
             }`}
           >
             <button
-              className="w-full h-full flex justify-center items-center cursor-pointer"
+              className="w-full h-full flex justify-center items-center cursor-pointer relative"
               onClick={() => switchWallet(wallet)}
             >
+              {index === 0 && (
+                <FaCrown className="absolute left-2 text-yellow-400" />
+              )}
               <p className="w-60 overflow-hidden whitespace-nowrap truncate text-xs text-white">
                 {wallet}
               </p>

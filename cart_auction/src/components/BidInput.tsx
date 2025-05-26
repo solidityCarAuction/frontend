@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { commonBtn } from "../dataset/config";
+import { commonBtn } from "../config/config";
 import { useUserStore } from "../stores/useUserStore";
 import { useLogStore } from "../stores/useLogStore";
 import { debounce } from "lodash";

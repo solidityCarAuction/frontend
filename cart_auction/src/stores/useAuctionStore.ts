@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { auctionContract } from "../utils/auctionInstance";
+import { auctionContract } from "../config/auctionInstance";
 
 interface AuctionItem {
   Brand: string;
@@ -125,9 +125,11 @@ export const useAuctionStore = create<AuctionState>((set) => ({
 
   withdrawFunds: async (currentWallet) => {
     try {
-      const transaction = await auctionContract.methods.withdrawRemainingFunds().send({
-        from: currentWallet,
-      });
+      const transaction = await auctionContract.methods
+        .withdrawRemainingFunds()
+        .send({
+          from: currentWallet,
+        });
       console.log(transaction);
     } catch (e: unknown) {
       const errorMsg = e instanceof Error ? e.message : String(e);
@@ -135,5 +137,6 @@ export const useAuctionStore = create<AuctionState>((set) => ({
     }
   },
 
-  updateHighestBid: (amount, bidder) => set({ highestBid: amount, highestBidder: bidder }), // useAuctionEvents 에서 세팅
+  updateHighestBid: (amount, bidder) =>
+    set({ highestBid: amount, highestBidder: bidder }), // useAuctionEvents 에서 세팅
 }));
