@@ -35,12 +35,15 @@ const useAuctionEvents = () => {
         console.log("입찰 이벤트 데이터:", event.returnValues);
         addLog(`[입찰] ${truncatedBidder}: ${weiToEther(highestBid)} eth`);
 
-        // 상태 업데이트를 동기적으로 처리
-        await updateHighestBid(Number(highestBid), highestBidder);
-
+        // 상태 업데이트를 병렬로 처리
         if (currentWallet) {
-          await getBalance(currentWallet);
-          await getStatus();
+          await Promise.all([
+            updateHighestBid(Number(highestBid), highestBidder),
+            getBalance(currentWallet),
+            getStatus(),
+          ]);
+        } else {
+          await updateHighestBid(Number(highestBid), highestBidder);
         }
       });
 

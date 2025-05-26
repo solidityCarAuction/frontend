@@ -3,15 +3,10 @@ import Card from "./Card";
 import { useUserStore } from "../../stores/useUserStore";
 
 const Cards = () => {
-  const { currentWallet, walletAddresses } = useUserStore((state) => state);
-  const isAdmin = walletAddresses?.[0] === currentWallet;
+  const isAdmin = useUserStore((state) => state.isAdmin);
 
   return (
-    <div
-      className={`grid ${
-        isAdmin ? "grid-cols-1 sm:grid-cols-2" : "grid-cols-1"
-      } gap-6`}
-    >
+    <div className="grid gap-6">
       {cardTitles.map((title, idx) => (
         <Card title={title.name} key={idx} />
       ))}
